@@ -29,7 +29,7 @@ This design enables:
 #### Modules without Parameters
 
 - **FlashAttention**  
-  Based on [Tri Dao's module](https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/flash_attn_triton.py). Updated to work on a standard Triton branch and GPUs other than A100. Supports arbitrary bias tensors (including of shape B,h,Q,K), enabling flexible and dynamic masking strategies.
+  Based on [FlashAttention-Triton](https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/flash_attn_triton.py). Updated to work on a standard Triton branch and GPUs other than A100. Supports arbitrary bias tensors (including of shape B,h,Q,K), enabling flexible and dynamic masking strategies.
 
 - **L2Normalize**  
   Performs L2 normalization over the last dimension with internal promotion to FP32 for stability.
@@ -70,5 +70,5 @@ These operations do not currently use Triton’s auto-tuning features. Launch co
 
 This repository is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
 
-The `FlashAttention` operator is adapted from [Tri Dao's FlashAttention implementation](https://github.com/Dao-AILab/flash-attention), originally licensed under the **BSD-3-Clause** license. The original copyright and license notice have been retained in the source file in accordance with the terms of that license. See `LICENSE.BSD-3-Clause` for details.
+The `FlashAttention` operator is adapted from [FlashAttention](https://github.com/Dao-AILab/flash-attention), originally licensed under the **BSD-3-Clause** license. The original copyright and license notice have been retained in the source file in accordance with the terms of that license. See `LICENSE.BSD-3-Clause` for details.
 
