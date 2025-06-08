@@ -1,0 +1,4 @@
+torch>=2.5.1
+triton>=3.1.0
+pytest>=7.0.0
+einops>=0.8.1

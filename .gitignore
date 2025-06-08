@@ -1,0 +1,68 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Distribution / packaging
+*.egg-info/
+*.egg
+*.whl
+build/
+dist/
+
+# Python virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Docker
+*.tar
+*.gz
+*.tgz
+
+# Logs
+*.log
+*.out
+
+# Data files (exclude unless explicitly tracked)
+*.json
+*.csv
+*.db
+
+
+# VS Code / JetBrains / other IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*~
+
+# OS/Filesystem clutter
+.DS_Store
+Thumbs.db
+
+# Compiled C/C++
+*.o
+*.a
+*.dll
+*.lib
+*.dylib
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+.coverage
+htmlcov/
+.cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Shell history or temp scripts
+*.sh~
+

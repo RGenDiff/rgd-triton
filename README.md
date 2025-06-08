@@ -2,7 +2,6 @@
 
 Collection of Triton operators for transformer models.
 
-> **Note:** Code will be uploaded within a few days following internal reorganization.
 
 ---
 
@@ -23,6 +22,57 @@ This design enables:
 - Efficient chaining of operations using single kernel launches via virtual tensors (e.g., fused QK normalization).
 
 ---
+
+## Usage
+
+Import operators as needed from ops.
+
+```python
+
+import torch
+import torch.nn as nn
+from rdg_triton.ops import FusedHeadLayerNorm, FlashAttention
+
+class Attention(nn.Module):
+    def __init__(self, dim, n_heads):
+        super().__init__()
+        self.n_heads = n_heads
+        self.head_dim = dim // n_heads
+
+        self.qkv = nn.Linear(dim, dim * 3, bias=False)
+        self.out_proj = nn.Linear(dim, dim)
+        self.attn_op = FlashAttention()
+        self.head_norm = FusedHeadLayerNorm()
+
+    def forward(self, x, bias=None):
+        B, T, C = x.shape
+        q, k, v = (
+            self.qkv(x)
+            .view(B, T, 3, self.n_heads, self.head_dim)
+            .permute(2, 0, 3, 1, 4)
+            .unbind(dim=0)
+        )
+
+        q, k = self.head_norm(q, k)
+        attn_out = self.attn_op(q, k, v, bias=bias)
+
+        attn_out = attn_out.transpose(1, 2).reshape(B, T, C)
+        return self.out_proj(attn_out)
+```
+
+Caching can be enabled or disabled using each rgd_triton.ops member function.
+
+```python
+for module in model.modules():
+    if hasattr(module, "enable_cache"):
+        module.enable_cache(enabled) # True or False
+```
+
+The cache is enabled by default and will be filled by the first kernel launch, and can be cleared by setting enable=False. 
+
+
+---
+
 
 ## Operations
 
@@ -65,6 +115,14 @@ PyTest-based unit tests are included to verify numerical correctness of both for
 ## Optimization
 
 These operations do not currently use Triton’s auto-tuning features. Launch configurations were selected based on empirical performance on an A6000 GPU, without exhaustive hyperparameter search. Performance may vary on other hardware.
+
+---
+
+## TODO
+
+- [ ] Track down numerical instability with FusedRMSNorm2 (only occurs with bf16 weights)
+
+---
 
 ## License
 
