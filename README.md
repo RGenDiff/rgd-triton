@@ -49,11 +49,11 @@ class Attention(nn.Module):
         q, k, v = (
             self.qkv(x)
             .view(B, T, 3, self.n_heads, self.head_dim)
-            .permute(2, 0, 3, 1, 4)
+            .permute(2, 0, 1, 3, 4) # shape (3,B,T,h,C)
             .unbind(dim=0)
         )
 
-        q, k = self.head_norm(q, k)
+        q, k = self.head_norm(q, k, heads_second=False)
         attn_out = self.attn_op(q, k, v, bias=bias)
 
         attn_out = attn_out.transpose(1, 2).reshape(B, T, C)
