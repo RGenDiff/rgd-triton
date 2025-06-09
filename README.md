@@ -56,7 +56,7 @@ class Attention(nn.Module):
         q, k = self.head_norm(q, k, heads_second=False)
         attn_out = self.attn_op(q, k, v, bias=bias)
 
-        attn_out = attn_out.transpose(1, 2).reshape(B, T, C)
+        attn_out = attn_out.reshape(B, T, C)
         return self.out_proj(attn_out)
 ```
 
