@@ -409,10 +409,12 @@ def _fused_rope_ln_qk_fwd(q, k, pos_emb, seq_cutoff=None, heads_second=True, nor
         qostrides = (qo.stride(0), qo.stride(2), qo.stride(1))
         kostrides = (ko.stride(0), ko.stride(2), ko.stride(1))
 
+    _,p_seq_len,rdim = pos_emb.shape
+
+    assert q_seq_len < p_seq_len
+    assert k_seq_len < p_seq_len
     assert (bq, hq, qdim) == (bk, hk, kdim)
     assert qdim <= 128, "Only supports head dimensions up to 128"
-
-    _,p_seq_len,rdim = pos_emb.shape
 
     if seq_cutoff is None:
         q_mask_len = q_seq_len

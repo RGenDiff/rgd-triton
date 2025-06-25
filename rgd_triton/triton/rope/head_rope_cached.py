@@ -158,7 +158,14 @@ def _combined_rope_block_kernel(
     tl.store(wr_ptr[:,None]+chan_offsets[None,:], new_row_block, mask=valid_mask)
 
 def combined_rope_fn(q, k, pos_emb, qo=None, ko=None, seq_cutoff=None, heads_second=True, is_bwd=False, kernel=None):
-    
+   
+    assert q.ndim == k.ndim == 4
+    assert pos_emb.ndim == 3
+    assert q.dtype == k.dtype, "All tensors must have the same type"
+    assert q.dtype in [torch.float16, torch.bfloat16, torch.float32], "Only support fp16, bf16, and fp32"
+    assert q.is_cuda and k.is_cuda and pos_emb.is_cuda
+    assert q.stride(-1) == k.stride(-1) == pos_emb.stride(-1) == 1
+
     if heads_second:
         bq,hq,q_seq_len,qdim = q.shape
         bk,hk,k_seq_len,kdim = k.shape
@@ -177,6 +184,11 @@ def combined_rope_fn(q, k, pos_emb, qo=None, ko=None, seq_cutoff=None, heads_sec
         kostrides = (ko.stride(0), ko.stride(2), ko.stride(1))
 
     _,p_seq_len,rdim = pos_emb.shape
+
+    assert q_seq_len < p_seq_len
+    assert k_seq_len < p_seq_len
+    assert (bq, hq, qdim) == (bk, hk, kdim)
+    assert qdim <= 128, "Only supports head dimensions up to 128"
 
     if seq_cutoff is None:
         q_mask_len = q_seq_len
